@@ -1,7 +1,5 @@
 const fetch = require("node-fetch");
 
-const API_ENDPOINT = "https://icanhazdadjoke.com/";
-
 exports.handler = async (event, context) => {
   // console.log(event);
 
@@ -9,9 +7,10 @@ exports.handler = async (event, context) => {
   path = `https://parseapi.back4app.com/${path}`;
 
   const body = event.body;
+  const isBase64Encoded = event.isBase64Encoded;
   const headers = {}
   for (const [key, value] of Object.entries(event.headers)) {
-    if (key.startsWith('x-parse') || key == 'content-type') {
+    if (key.startsWith('x-parse') || key.startsWith('content')) {
       headers[key] = value;
     }
   }
@@ -27,9 +26,11 @@ exports.handler = async (event, context) => {
       options = {
         method: method,
         headers: headers,
-        body: body
+        body: body,
+        isBase64Encoded: isBase64Encoded
       }
     }
+    // console.log(options);
     var response = await fetch(path, options);
     const data = await response.json();
     return {
@@ -40,7 +41,7 @@ exports.handler = async (event, context) => {
       body: JSON.stringify(data),
     };
   } catch (error) {
-    console.log(error)
+    // console.log(error)
     return {
       statusCode: 422,
       headers: {
