@@ -23,11 +23,18 @@ exports.handler = async (event, context) => {
     }
 
     if (method == 'POST' || method == 'PUT') {
-      options = {
-        method: method,
-        headers: headers,
-        body: body,
-        isBase64Encoded: isBase64Encoded
+      if (isBase64Encoded) {
+        options = {
+          method: method,
+          headers: headers,
+          body: Buffer.from(body, 'base64'),
+        }
+      } else {
+        options = {
+          method: method,
+          headers: headers,
+          body: body
+        }
       }
     }
     // console.log(options);
